@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ask about Naveen</title>
+<style>
+  :root {
+    --bg: #0b0f14; --panel: #121821; --panel-2: #171f2b; --line: #232d3b;
+    --text: #e7edf5; --muted: #8b98a9; --accent: #4a90d9; --ok: #3fb27f;
+    --deny: #e0685a; --warn: #d9a441;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .shell { max-width: 900px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  header { margin-bottom: 6px; }
+  h1 { font-size: 22px; margin: 0 0 4px; font-weight: 650; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); font-size: 13.5px; }
+
+  .mode-toggle { display: flex; gap: 6px; margin: 18px 0 16px; }
+  .mode-btn {
+    background: none; border: 1px solid var(--line); color: var(--muted);
+    padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 13.5px;
+  }
+  .mode-btn.on { background: var(--panel-2); color: var(--text); border-color: var(--accent); }
+
+  .thread { display: flex; flex-direction: column; gap: 16px; min-height: 160px; margin-bottom: 18px; }
+  .turn { display: flex; }
+  .turn.user { justify-content: flex-end; }
+  .bubble {
+    max-width: 84%; padding: 12px 15px; border-radius: 12px;
+    white-space: pre-wrap; word-break: break-word; font-size: 14.5px;
+  }
+  .user .bubble { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+  .assistant .bubble { background: var(--panel); border: 1px solid var(--line); border-bottom-left-radius: 4px; max-width: 100%; }
+  .assistant.failed .bubble { border-color: var(--deny); color: #f0b3ab; }
+
+  /* .bubble sets white-space:pre-wrap for the plain-text answer; card/trace are
+     built from indented template literals, so they must opt back out or the
+     indentation renders as visible blank lines. */
+  .card, .trace { white-space: normal; }
+
+  .trace { margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 8px; }
+  .trace-head { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; }
+  .call { display: flex; gap: 8px; align-items: center; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; color: var(--muted); padding: 2px 0; }
+  .badge { padding: 1px 6px; border-radius: 5px; font-size: 10px; }
+  .badge.OK { background: rgba(63,178,127,.15); color: var(--ok); }
+  .badge.ERROR { background: rgba(224,104,90,.15); color: var(--deny); }
+
+  /* result cards */
+  .card { margin-top: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 14px; background: var(--panel-2); }
+  .card h3 { margin: 0 0 4px; font-size: 15px; }
+  .card .tagline { color: var(--muted); font-size: 12.5px; margin-bottom: 8px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .tag { background: rgba(74,144,217,.12); color: #8fbdec; border: 1px solid rgba(74,144,217,.25); padding: 3px 9px; border-radius: 20px; font-size: 11.5px; }
+  .tag.gap { background: rgba(224,104,90,.10); color: #f0a99c; border-color: rgba(224,104,90,.25); }
+  .card a.link-btn { display: inline-block; margin-top: 10px; color: var(--accent); text-decoration: none; font-size: 13px; }
+  .card a.link-btn:hover { text-decoration: underline; }
+
+  .timeline { position: relative; padding-left: 18px; }
+  .timeline::before { content: ""; position: absolute; left: 4px; top: 4px; bottom: 4px; width: 2px; background: var(--line); }
+  .t-item { position: relative; padding: 0 0 16px 14px; }
+  .t-item:last-child { padding-bottom: 0; }
+  .t-item::before { content: ""; position: absolute; left: -18px; top: 4px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+  .t-item .co { font-weight: 600; font-size: 14px; }
+  .t-item .role { color: var(--muted); font-size: 12.5px; margin-bottom: 3px; }
+  .t-item .one { font-size: 13.5px; }
+
+  .proj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  @media (max-width: 620px) { .proj-grid { grid-template-columns: 1fr; } }
+  .proj-card { border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: var(--panel-2); }
+  .proj-card h4 { margin: 0 0 3px; font-size: 13.5px; }
+  .proj-card .tagline { font-size: 11.5px; color: var(--muted); margin-bottom: 6px; }
+  .proj-card p { font-size: 12.5px; margin: 0 0 6px; }
+  .proj-card a { color: var(--accent); font-size: 12px; text-decoration: none; }
+
+  .skill-groups { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+  .skill-group .area { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 4px; }
+
+  .fit-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 4px; }
+  @media (max-width: 620px) { .fit-cols { grid-template-columns: 1fr; } }
+  .fit-col h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; margin: 0 0 8px; }
+  .fit-col.matched h4 { color: var(--ok); }
+  .fit-col.gaps h4 { color: var(--deny); }
+  .fit-bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; margin: 10px 0 4px; display: flex; }
+  .fit-bar .m { background: var(--ok); }
+  .fit-bar .g { background: var(--deny); }
+  .fit-note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+  .composer { display: flex; gap: 8px; }
+  textarea, input[type=text] {
+    flex: 1; resize: vertical; min-height: 48px; background: var(--panel-2);
+    color: var(--text); border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px 14px; font: inherit; font-size: 14.5px;
+  }
+  button.send {
+    background: var(--accent); color: #fff; border: 0; border-radius: 10px;
+    padding: 0 22px; font-size: 14px; cursor: pointer; font-weight: 550;
+  }
+  button.send:disabled { opacity: .45; cursor: default; }
+
+  .proof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 680px) { .proof-grid { grid-template-columns: 1fr; } }
+  .proof-col { border: 1px solid var(--line); border-radius: 9px; padding: 11px 12px; }
+  .proof-col.good { border-color: rgba(80,190,130,0.45); background: rgba(80,190,130,0.06); }
+  .proof-col.bad { border-color: rgba(220,110,110,0.45); background: rgba(220,110,110,0.06); }
+  .proof-head {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .07em;
+    font-weight: 600; margin-bottom: 7px;
+  }
+  .proof-col.good .proof-head { color: #6bd49a; }
+  .proof-col.bad .proof-head { color: #e08585; }
+  .proof-body { font-size: 13.5px; line-height: 1.55; white-space: pre-wrap; }
+  .proof-meta {
+    margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--line);
+    font-size: 11px; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .proof-note { margin-top: 11px; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+
+  .chips { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 12px; }
+  .chip {
+    background: var(--panel); border: 1px solid var(--line); color: var(--muted);
+    border-radius: 20px; padding: 6px 13px; font-size: 12.5px; cursor: pointer;
+  }
+  .chip:hover { color: var(--text); border-color: var(--accent); }
+
+  .empty { color: var(--muted); font-size: 13.5px; padding: 10px 0; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <h1>Ask about Naveen</h1>
+    <div class="sub">A small agent grounded in the real work history and projects below — not a generic chatbot. Every answer comes from a tool call, shown under the reply.</div>
+  </header>
+
+  <div class="mode-toggle">
+    <button class="mode-btn on" id="modeAsk" onclick="setMode('ask')">Ask a question</button>
+    <button class="mode-btn" id="modeFit" onclick="setMode('fit')">Paste a job description</button>
+    <button class="mode-btn" id="modeProof" onclick="setMode('proof')">Why trust it?</button>
+  </div>
+
+  <div class="thread" id="thread"></div>
+
+  <div id="askComposer" class="composer">
+    <textarea id="draft" placeholder="Ask about a project, a job, or a skill area…" onkeydown="if(event.ctrlKey && event.key==='Enter') send()"></textarea>
+    <button class="send" id="sendBtn" onclick="send()">Send</button>
+  </div>
+
+  <div id="fitComposer" class="composer" style="display:none">
+    <textarea id="jdDraft" placeholder="Paste the job description here…" style="min-height:110px"></textarea>
+    <button class="send" id="fitBtn" onclick="sendFit()">Check fit</button>
+  </div>
+
+  <div id="proofComposer" class="composer" style="display:none">
+    <textarea id="proofDraft" placeholder="Ask anything factual — dates, projects, what I built where…"></textarea>
+    <button class="send" id="proofBtn" onclick="sendProof()">Run both</button>
+  </div>
+
+  <div class="chips" id="chips"></div>
+</div>
+
+<script>
+  // Point this at wherever the backend is actually running.
+  const API_BASE = window.PORTFOLIO_ASSIST_API || 'http://localhost:8081/api';
+
+  const SUGGESTIONS = [
+    'What have you built with AI/MCP?',
+    'Walk me through your background',
+    'What did you do at Fidelity?',
+    'What testing tools do you use?',
+    'Tell me about Bank Assist'
+  ];
+
+  let mode = 'ask';
+  const thread = document.getElementById('thread');
+
+  function setMode(m) {
+    mode = m;
+    document.getElementById('modeAsk').classList.toggle('on', m === 'ask');
+    document.getElementById('modeFit').classList.toggle('on', m === 'fit');
+    document.getElementById('modeProof').classList.toggle('on', m === 'proof');
+    document.getElementById('askComposer').style.display = m === 'ask' ? 'flex' : 'none';
+    document.getElementById('fitComposer').style.display = m === 'fit' ? 'flex' : 'none';
+    document.getElementById('proofComposer').style.display = m === 'proof' ? 'flex' : 'none';
+    document.getElementById('chips').style.display = m === 'ask' ? 'flex' : 'none';
+    if (m === 'proof') showProofIntro();
+  }
+
+  let proofIntroShown = false;
+  function showProofIntro() {
+    if (proofIntroShown) return;
+    proofIntroShown = true;
+    const row = document.createElement('div');
+    row.className = 'turn assistant';
+    row.innerHTML = '<div class="bubble">Fair question — a chatbot claiming to be someone\'s resume is easy to fake. '
+      + 'So ask me something factual and I\'ll answer it twice: once with my tools connected, once with them cut off. '
+      + 'Same model, same persona prompt, same question. The only difference is whether it can look anything up.</div>';
+    thread.appendChild(row);
+    thread.scrollTop = thread.scrollHeight;
+  }
+
+  function renderChips() {
+    const el = document.getElementById('chips');
+    el.innerHTML = '';
+    SUGGESTIONS.forEach(s => {
+      const c = document.createElement('span');
+      c.className = 'chip';
+      c.textContent = s;
+      c.onclick = () => { document.getElementById('draft').value = s; send(); };
+      el.appendChild(c);
+    });
+  }
+  renderChips();
+
+  function addUserTurn(text) {
+    const row = document.createElement('div');
+    row.className = 'turn user';
+    row.innerHTML = `<div class="bubble"></div>`;
+    row.querySelector('.bubble').textContent = text;
+    thread.appendChild(row);
+    thread.scrollTop = thread.scrollHeight;
+  }
+
+  function addAssistantTurn(text, failed) {
+    const row = document.createElement('div');
+    row.className = 'turn assistant' + (failed ? ' failed' : '');
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.textContent = text;
+    row.appendChild(bubble);
+    thread.appendChild(row);
+    thread.scrollTop = thread.scrollHeight;
+    return bubble;
+  }
+
+  function esc(s) { const d = document.createElement('div'); d.textContent = s ?? ''; return d.innerHTML; }
+
+  function renderCard(bubble, resultType, card) {
+    if (!card) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'card';
+
+    if (resultType === 'experience' && card.items) {
+      wrap.innerHTML = `<div class="timeline">${card.items.map(i => `
+        <div class="t-item">
+          <div class="co">${esc(i.company)}</div>
+          <div class="role">${esc(i.title)} · ${esc(i.dateRange)}</div>
+          <div class="one">${esc(i.oneLiner)}</div>
+        </div>`).join('')}</div>`;
+    } else if (resultType === 'experienceDetail') {
+      wrap.innerHTML = `<h3>${esc(card.company)}</h3><div class="tagline">${esc(card.title)} · ${esc(card.dateRange)}</div>
+        <div class="tags">${(card.stack||[]).map(s => `<span class="tag">${esc(s)}</span>`).join('')}</div>`;
+    } else if (resultType === 'projects' && card.items) {
+      wrap.innerHTML = `<div class="proj-grid">${card.items.map(p => `
+        <div class="proj-card">
+          <h4>${esc(p.name)}</h4>
+          <div class="tagline">${esc(p.tagline)}</div>
+          <p>${esc(p.summary)}</p>
+          <a href="${esc(p.url)}" target="_blank" rel="noopener">View →</a>
+        </div>`).join('')}</div>`;
+    } else if (resultType === 'projectDetail') {
+      wrap.innerHTML = `<h3>${esc(card.name)}</h3><div class="tagline">${esc(card.tagline)}</div>
+        <div class="tags">${(card.stack||[]).map(s => `<span class="tag">${esc(s)}</span>`).join('')}</div>
+        <a class="link-btn" href="${esc(card.url)}" target="_blank" rel="noopener">View project →</a>`;
+    } else if (resultType === 'skills' && card.groups) {
+      wrap.innerHTML = `<div class="skill-groups">${card.groups.map(g => `
+        <div class="skill-group">
+          <div class="area">${esc(g.area)}</div>
+          <div class="tags">${g.items.map(i => `<span class="tag">${esc(i)}</span>`).join('')}</div>
+        </div>`).join('')}</div>`;
+    } else if (resultType === 'fit') {
+      const total = (card.matchedCount || 0) + (card.gapCount || 0) || 1;
+      const mPct = Math.round(100 * (card.matchedCount || 0) / total);
+      wrap.innerHTML = `
+        <div class="fit-bar"><div class="m" style="width:${mPct}%"></div><div class="g" style="width:${100-mPct}%"></div></div>
+        <div class="fit-cols">
+          <div class="fit-col matched">
+            <h4>Real experience (${card.matchedCount||0})</h4>
+            <div class="tags">${(card.matchedSkills||[]).map(s => `<span class="tag">${esc(s)}</span>`).join('') || '<span class="empty">none matched</span>'}</div>
+          </div>
+          <div class="fit-col gaps">
+            <h4>Gaps (${card.gapCount||0})</h4>
+            <div class="tags">${(card.gaps||[]).map(s => `<span class="tag gap">${esc(s)}</span>`).join('') || '<span class="empty">none</span>'}</div>
+          </div>
+        </div>
+        <div class="fit-note">Best proof points: ${esc((card.highlightedExperience||[]).concat(card.highlightedProjects||[]).join(', ') || 'n/a')}</div>`;
+    } else {
+      return;
+    }
+    bubble.appendChild(wrap);
+  }
+
+  function renderTrace(bubble, toolCalls) {
+    if (!toolCalls || !toolCalls.length) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'trace';
+    wrap.innerHTML = `<div class="trace-head">${toolCalls.length} tool call${toolCalls.length===1?'':'s'}</div>` +
+      toolCalls.map(c => `<div class="call"><span class="badge ${c.outcome}">${esc(c.outcome)}</span><span>${esc(c.tool)}</span><span>${c.latencyMs}ms</span></div>`).join('');
+    bubble.appendChild(wrap);
+  }
+
+  async function callApi(path, body) {
+    const res = await fetch(API_BASE + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  }
+
+  async function send() {
+    const el = document.getElementById('draft');
+    const message = el.value.trim();
+    if (!message) return;
+    el.value = '';
+    addUserTurn(message);
+    document.getElementById('sendBtn').disabled = true;
+    try {
+      const res = await callApi('/ask', { message });
+      const bubble = addAssistantTurn(res.answer);
+      renderCard(bubble, res.resultType, res.card);
+      renderTrace(bubble, res.toolCalls);
+    } catch (e) {
+      addAssistantTurn('Could not reach the assistant. Is the backend running? (' + e.message + ')', true);
+    } finally {
+      document.getElementById('sendBtn').disabled = false;
+    }
+  }
+
+  async function sendFit() {
+    const el = document.getElementById('jdDraft');
+    const jobDescription = el.value.trim();
+    if (!jobDescription) return;
+    addUserTurn('[Pasted a job description — ' + jobDescription.length + ' characters]');
+    document.getElementById('fitBtn').disabled = true;
+    try {
+      const res = await callApi('/assess-fit', { jobDescription });
+      const bubble = addAssistantTurn(res.answer);
+      renderCard(bubble, res.resultType, res.card);
+      renderTrace(bubble, res.toolCalls);
+    } catch (e) {
+      addAssistantTurn('Could not reach the assistant. Is the backend running? (' + e.message + ')', true);
+    } finally {
+      document.getElementById('fitBtn').disabled = false;
+    }
+  }
+
+  async function sendProof() {
+    const el = document.getElementById('proofDraft');
+    const message = el.value.trim();
+    if (!message) return;
+    el.value = '';
+    addUserTurn(message);
+    document.getElementById('proofBtn').disabled = true;
+    try {
+      const res = await callApi('/grounding-demo', { message });
+      renderProof(res);
+    } catch (e) {
+      addAssistantTurn('Could not reach the assistant. Is the backend running? (' + e.message + ')', true);
+    } finally {
+      document.getElementById('proofBtn').disabled = false;
+    }
+  }
+
+  function renderProof(res) {
+    const row = document.createElement('div');
+    row.className = 'turn assistant';
+    const tools = (res.groundedToolCalls || []).map(t => t.tool).join(', ') || 'none';
+    row.innerHTML = `
+      <div class="bubble">
+        <div class="proof-grid">
+          <div class="proof-col good">
+            <div class="proof-head">Tools connected</div>
+            <div class="proof-body">${esc(res.groundedAnswer)}</div>
+            <div class="proof-meta">Looked up: ${esc(tools)} · ${res.groundedLatencyMs}ms</div>
+          </div>
+          <div class="proof-col bad">
+            <div class="proof-head">Tools cut off</div>
+            <div class="proof-body">${esc(res.ungroundedAnswer)}</div>
+            <div class="proof-meta">Nothing looked up · ${res.ungroundedLatencyMs}ms</div>
+          </div>
+        </div>
+        <div class="proof-note">Both answers sound equally confident. Only the left one is checkable — every fact in it came back from a tool call against real content. The right one is the same model with nothing to consult, which is what most "chat with my resume" demos actually are.</div>
+      </div>`;
+    thread.appendChild(row);
+    thread.scrollTop = thread.scrollHeight;
+  }
+
+  // Free hosting tiers sleep after ~15 minutes idle and take up to a minute to wake.
+  // Nudging the health endpoint as soon as the page opens means the backend is usually
+  // already awake by the time a visitor finishes typing their first question.
+  fetch(API_BASE.replace(/\/api$/, '') + '/actuator/health').catch(() => {});
+</script>
+</body>
+</html>

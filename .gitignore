@@ -1,0 +1,13 @@
+target/
+*.class
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# claude code session state
+.claude/
+
+# secrets
+.env
+*.local

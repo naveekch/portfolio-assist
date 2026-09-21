@@ -1,0 +1,15 @@
+# Render "Blueprint" - lets you deploy this with New > Blueprint in the Render
+# dashboard instead of clicking through the individual service settings.
+# GEMINI_API_KEY has no default on purpose: Render will prompt for it at
+# deploy time rather than have it committed anywhere.
+services:
+  - type: web
+    name: portfolio-assist
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false

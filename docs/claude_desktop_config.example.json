@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "portfolio-assist": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://localhost:8081/sse"]
+    }
+  }
+}

@@ -1,0 +1,47 @@
+# Render (and most free hosts) assign the port at runtime via $PORT - the
+# fallback of 8081 is only for running locally.
+server:
+  port: ${PORT:8081}
+
+spring:
+  application:
+    name: portfolio-assist
+
+  ai:
+    # Gemini Developer API (Google AI Studio) - a free API key, no GCP/billing
+    # account needed, unlike Vertex AI. Get one at https://aistudio.google.com/app/apikey
+    google:
+      genai:
+        api-key: ${GEMINI_API_KEY:}
+        chat:
+          options:
+            # A new Google AI Studio key gets a 404 on every 2.x model ("no longer
+            # available to new users"), and the 3.x flagship (gemini-3.6-flash) has a
+            # free quota tight enough to 429 after a handful of turns. 3.x flash-lite
+            # is the one that is both open to new keys and fast (~1-2s per turn).
+            model: gemini-3.5-flash-lite
+            temperature: 0.2
+    mcp:
+      server:
+        name: portfolio-assist
+        version: 0.1.0
+        type: SYNC
+        sse-message-endpoint: /mcp/message
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+# Allowed origins for the static front-end page. Tighten this in WebConfig
+# once this is hosted somewhere other than a local file.
+app:
+  cors:
+    allowed-origins:
+      - http://localhost:5500
+      - http://127.0.0.1:5500
+      - null
