@@ -4,6 +4,7 @@ import com.naveench.portfolioassist.content.*;
 import com.naveench.portfolioassist.dto.AskResponse;
 import com.naveench.portfolioassist.dto.GroundingDemoResponse;
 import com.naveench.portfolioassist.dto.ToolCallView;
+import com.naveench.portfolioassist.dto.UngroundedResponse;
 import com.naveench.portfolioassist.mcp.ToolTrace;
 import com.naveench.portfolioassist.service.ContentService;
 import com.naveench.portfolioassist.service.FitAssessor;
@@ -107,16 +108,25 @@ public class AgentService {
         }
         long groundedMs = System.currentTimeMillis() - groundedStart;
 
-        long ungroundedStart = System.currentTimeMillis();
-        String ungroundedAnswer = chatClient.prompt()
+        UngroundedResponse ungrounded = askUngrounded(question);
+
+        return new GroundingDemoResponse(question, groundedAnswer, groundedCalls, groundedMs,
+                ungrounded.answer(), ungrounded.latencyMs());
+    }
+
+    /**
+     * The control side of the grounding demo on its own, so the UI can reveal the
+     * ungrounded twin of an answer it already has without paying for a second
+     * grounded call.
+     */
+    public UngroundedResponse askUngrounded(String question) {
+        long start = System.currentTimeMillis();
+        String answer = chatClient.prompt()
                 .system(UNGROUNDED_PROMPT)
                 .user(question)
                 .call()
                 .content();
-        long ungroundedMs = System.currentTimeMillis() - ungroundedStart;
-
-        return new GroundingDemoResponse(question, groundedAnswer, groundedCalls, groundedMs,
-                ungroundedAnswer, ungroundedMs);
+        return new UngroundedResponse(answer, System.currentTimeMillis() - start);
     }
 
     public AskResponse assessFit(String jobDescription) {

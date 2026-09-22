@@ -69,7 +69,9 @@ It runs on **Gemini** (the free Gemini Developer API, via a Google AI Studio key
 
 A portfolio chatbot claiming to be someone's resume is trivially easy to fake, and a recruiter has no way to tell from the outside. So the site lets you check.
 
-Ask anything factual in the third tab and it answers twice, side by side: once with the tools connected, once with them cut off. Same model, same persona prompt, same question — the only variable is whether it can look anything up. `POST /api/grounding-demo` runs both and returns them together.
+Under every answer there's a quiet link: **now take the tools away**. Click it and the same question goes back to the same model with its tools removed, and the second answer unfolds right underneath the first. Same persona prompt, same question — the only variable is whether it can look anything up. `POST /api/ungrounded` serves that reveal; `POST /api/grounding-demo` runs both halves in one call for scripted use.
+
+Putting it under each answer rather than behind its own tab matters: you meet the honest answer first, believe it, and only then watch the fabricated twin appear beneath the thing you just read.
 
 The ungrounded side is a fair control, not a strawman: it gets the identical persona prompt with only the grounding rules and tool access removed, which is exactly what this project would be if it were the usual "paste a resume into a system prompt" wrapper. It answers just as fluently and just as confidently. It also, reliably, gets the dates wrong and invents work that never happened — in one run it placed the Capital One job in 2022-2023 instead of 2024-2025 and credited it with fraud-detection pipelines written in Go.
 

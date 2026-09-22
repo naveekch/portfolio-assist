@@ -4,304 +4,304 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ask about Naveen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+  /* Lifted from the portfolio's style.css so this page reads as part of the
+     same site rather than a bolted-on tool. */
   :root {
-    --bg: #0b0f14; --panel: #121821; --panel-2: #171f2b; --line: #232d3b;
-    --text: #e7edf5; --muted: #8b98a9; --accent: #4a90d9; --ok: #3fb27f;
-    --deny: #e0685a; --warn: #d9a441;
+    --bg-gradient-jet: linear-gradient(to bottom right, hsla(240,1%,18%,0.251) 0%, hsla(240,2%,11%,0) 100%), hsl(240,2%,13%);
+    --border-gradient-onyx: linear-gradient(to bottom right, hsl(0,0%,25%) 0%, hsla(0,0%,25%,0) 50%);
+    --text-gradient-yellow: linear-gradient(to right, hsl(45,100%,72%), hsl(35,100%,68%));
+    --jet: hsl(0,0%,22%);
+    --onyx: hsl(240,1%,17%);
+    --eerie-black-1: hsl(240,2%,13%);
+    --eerie-black-2: hsl(240,2%,12%);
+    --smoky-black: hsl(0,0%,7%);
+    --white-2: hsl(0,0%,98%);
+    --orange-yellow-crayola: hsl(45,100%,72%);
+    --vegas-gold: hsl(45,54%,58%);
+    --light-gray: hsl(0,0%,84%);
+    --light-gray-70: hsla(0,0%,84%,0.7);
+    --bittersweet-shimmer: hsl(0,43%,51%);
+    --ff-poppins: 'Poppins', sans-serif;
+    --shadow-1: -4px 8px 24px hsla(0,0%,0%,0.25);
+    --shadow-2: 0 16px 30px hsla(0,0%,0%,0.25);
+    --transition-1: 0.25s ease;
   }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--smoky-black);
+    color: var(--white-2);
+    font-family: var(--ff-poppins);
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 20px 12px 60px;
   }
-  .shell { max-width: 900px; margin: 0 auto; padding: 28px 20px 60px; }
+  .shell { max-width: 780px; margin: 0 auto; }
 
-  header { margin-bottom: 6px; }
-  h1 { font-size: 22px; margin: 0 0 4px; font-weight: 650; letter-spacing: -0.01em; }
-  .sub { color: var(--muted); font-size: 13.5px; }
-
-  .mode-toggle { display: flex; gap: 6px; margin: 18px 0 16px; }
-  .mode-btn {
-    background: none; border: 1px solid var(--line); color: var(--muted);
-    padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 13.5px;
+  article {
+    background: var(--eerie-black-2);
+    border: 1px solid var(--jet);
+    border-radius: 20px;
+    padding: 20px 18px;
+    box-shadow: var(--shadow-1);
   }
-  .mode-btn.on { background: var(--panel-2); color: var(--text); border-color: var(--accent); }
+  @media (min-width: 580px) { article { padding: 30px; } }
 
-  .thread { display: flex; flex-direction: column; gap: 16px; min-height: 160px; margin-bottom: 18px; }
-  .turn { display: flex; }
-  .turn.user { justify-content: flex-end; }
-  .bubble {
-    max-width: 84%; padding: 12px 15px; border-radius: 12px;
-    white-space: pre-wrap; word-break: break-word; font-size: 14.5px;
+  h1 { font-size: 24px; font-weight: 600; color: var(--white-2); }
+  .title-rule { position: relative; padding-bottom: 7px; margin-bottom: 14px; }
+  .title-rule::after {
+    content: ""; position: absolute; bottom: 0; left: 0;
+    width: 30px; height: 3px; background: var(--text-gradient-yellow); border-radius: 3px;
   }
-  .user .bubble { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
-  .assistant .bubble { background: var(--panel); border: 1px solid var(--line); border-bottom-left-radius: 4px; max-width: 100%; }
-  .assistant.failed .bubble { border-color: var(--deny); color: #f0b3ab; }
+  .lede { color: var(--light-gray-70); font-size: 14px; font-weight: 300; margin-bottom: 22px; }
+  .lede b { color: var(--light-gray); font-weight: 400; }
 
-  /* .bubble sets white-space:pre-wrap for the plain-text answer; card/trace are
-     built from indented template literals, so they must opt back out or the
-     indentation renders as visible blank lines. */
-  .card, .trace { white-space: normal; }
+  /* Gradient-border card, the portfolio's signature surface. */
+  .gcard {
+    position: relative; background: var(--border-gradient-onyx);
+    padding: 16px; border-radius: 14px; box-shadow: var(--shadow-2); z-index: 1;
+  }
+  .gcard::before {
+    content: ""; position: absolute; inset: 1px;
+    background: var(--bg-gradient-jet); border-radius: inherit; z-index: -1;
+  }
 
-  .trace { margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 8px; }
-  .trace-head { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; }
-  .call { display: flex; gap: 8px; align-items: center; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; color: var(--muted); padding: 2px 0; }
-  .badge { padding: 1px 6px; border-radius: 5px; font-size: 10px; }
-  .badge.OK { background: rgba(63,178,127,.15); color: var(--ok); }
-  .badge.ERROR { background: rgba(224,104,90,.15); color: var(--deny); }
+  .thread { display: flex; flex-direction: column; gap: 18px; margin-bottom: 20px; }
+  .thread:empty { display: none; }
+  .turn.user { display: flex; justify-content: flex-end; }
+  .turn.user .bubble {
+    background: var(--orange-yellow-crayola); color: var(--smoky-black);
+    font-weight: 500; font-size: 14px; padding: 10px 16px;
+    border-radius: 14px 14px 4px 14px; max-width: 85%;
+  }
+  .answer { font-size: 14.5px; font-weight: 300; color: var(--light-gray); white-space: pre-wrap; }
+  .answer strong { color: var(--white-2); font-weight: 500; }
+  .failed { color: hsl(0,60%,72%); }
 
-  /* result cards */
-  .card { margin-top: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 14px; background: var(--panel-2); }
-  .card h3 { margin: 0 0 4px; font-size: 15px; }
-  .card .tagline { color: var(--muted); font-size: 12.5px; margin-bottom: 8px; }
-  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-  .tag { background: rgba(74,144,217,.12); color: #8fbdec; border: 1px solid rgba(74,144,217,.25); padding: 3px 9px; border-radius: 20px; font-size: 11.5px; }
-  .tag.gap { background: rgba(224,104,90,.10); color: #f0a99c; border-color: rgba(224,104,90,.25); }
-  .card a.link-btn { display: inline-block; margin-top: 10px; color: var(--accent); text-decoration: none; font-size: 13px; }
+  .meta-row {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--jet);
+  }
+  .toolchip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11.5px; color: var(--vegas-gold);
+    background: hsla(45,100%,72%,0.08); border: 1px solid hsla(45,100%,72%,0.25);
+    padding: 3px 10px; border-radius: 20px;
+  }
+  .toolchip .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--orange-yellow-crayola); }
+  .ms { font-size: 11px; color: hsl(0,0%,45%); }
+
+  /* The curtain: an unobtrusive link under each answer that reveals the
+     same question answered with the tools taken away. */
+  .curtain-btn {
+    margin-left: auto; background: none; border: 0; cursor: pointer;
+    font-family: inherit; font-size: 11.5px; color: hsl(0,0%,50%);
+    border-bottom: 1px dashed hsl(0,0%,32%); padding: 0 0 1px; transition: var(--transition-1);
+  }
+  .curtain-btn:hover { color: var(--bittersweet-shimmer); border-bottom-color: var(--bittersweet-shimmer); }
+  .curtain-btn:disabled { opacity: .5; cursor: default; }
+
+  .curtain {
+    margin-top: 14px; border-left: 2px solid var(--bittersweet-shimmer);
+    background: hsla(0,43%,51%,0.06); border-radius: 0 10px 10px 0;
+    padding: 13px 15px; animation: slidein .35s ease;
+  }
+  @keyframes slidein { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  .curtain-head {
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em;
+    color: hsl(0,55%,68%); font-weight: 500; margin-bottom: 8px;
+  }
+  .curtain-body { font-size: 13.5px; font-weight: 300; color: hsl(0,0%,72%); white-space: pre-wrap; }
+  .curtain-foot { margin-top: 10px; font-size: 11.5px; color: hsl(0,0%,48%); font-weight: 300; line-height: 1.55; }
+
+  /* Result cards */
+  .card { margin-top: 14px; }
+  .card h3 { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+  .card .tagline { color: var(--light-gray-70); font-size: 12.5px; font-weight: 300; margin-bottom: 8px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tag {
+    background: hsla(45,100%,72%,0.08); color: var(--vegas-gold);
+    border: 1px solid hsla(45,100%,72%,0.22);
+    padding: 3px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 300;
+  }
+  .tag.gap { background: hsla(0,43%,51%,0.08); color: hsl(0,45%,68%); border-color: hsla(0,43%,51%,0.25); }
+  .card a.link-btn { display: inline-block; margin-top: 12px; color: var(--orange-yellow-crayola); text-decoration: none; font-size: 13px; }
   .card a.link-btn:hover { text-decoration: underline; }
 
-  .timeline { position: relative; padding-left: 18px; }
-  .timeline::before { content: ""; position: absolute; left: 4px; top: 4px; bottom: 4px; width: 2px; background: var(--line); }
-  .t-item { position: relative; padding: 0 0 16px 14px; }
-  .t-item:last-child { padding-bottom: 0; }
-  .t-item::before { content: ""; position: absolute; left: -18px; top: 4px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
-  .t-item .co { font-weight: 600; font-size: 14px; }
-  .t-item .role { color: var(--muted); font-size: 12.5px; margin-bottom: 3px; }
-  .t-item .one { font-size: 13.5px; }
-
-  .proj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-  @media (max-width: 620px) { .proj-grid { grid-template-columns: 1fr; } }
-  .proj-card { border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: var(--panel-2); }
-  .proj-card h4 { margin: 0 0 3px; font-size: 13.5px; }
-  .proj-card .tagline { font-size: 11.5px; color: var(--muted); margin-bottom: 6px; }
-  .proj-card p { font-size: 12.5px; margin: 0 0 6px; }
-  .proj-card a { color: var(--accent); font-size: 12px; text-decoration: none; }
-
-  .skill-groups { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
-  .skill-group .area { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 4px; }
-
-  .fit-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 4px; }
-  @media (max-width: 620px) { .fit-cols { grid-template-columns: 1fr; } }
-  .fit-col h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; margin: 0 0 8px; }
-  .fit-col.matched h4 { color: var(--ok); }
-  .fit-col.gaps h4 { color: var(--deny); }
-  .fit-bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; margin: 10px 0 4px; display: flex; }
-  .fit-bar .m { background: var(--ok); }
-  .fit-bar .g { background: var(--deny); }
-  .fit-note { font-size: 12px; color: var(--muted); margin-top: 10px; }
-
-  .composer { display: flex; gap: 8px; }
-  textarea, input[type=text] {
-    flex: 1; resize: vertical; min-height: 48px; background: var(--panel-2);
-    color: var(--text); border: 1px solid var(--line); border-radius: 10px;
-    padding: 12px 14px; font: inherit; font-size: 14.5px;
+  .timeline-mini { display: flex; flex-direction: column; gap: 14px; }
+  .tl-item { position: relative; padding-left: 17px; }
+  .tl-item::before {
+    content: ""; position: absolute; left: 0; top: 7px;
+    width: 7px; height: 7px; border-radius: 50%; background: var(--orange-yellow-crayola);
   }
-  button.send {
-    background: var(--accent); color: #fff; border: 0; border-radius: 10px;
-    padding: 0 22px; font-size: 14px; cursor: pointer; font-weight: 550;
-  }
-  button.send:disabled { opacity: .45; cursor: default; }
+  .tl-item .co { font-size: 14px; font-weight: 500; }
+  .tl-item .role { color: var(--vegas-gold); font-size: 12.5px; font-weight: 300; }
+  .tl-item .one { font-size: 13px; font-weight: 300; color: var(--light-gray-70); margin-top: 2px; }
 
-  .proof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  @media (max-width: 680px) { .proof-grid { grid-template-columns: 1fr; } }
-  .proof-col { border: 1px solid var(--line); border-radius: 9px; padding: 11px 12px; }
-  .proof-col.good { border-color: rgba(80,190,130,0.45); background: rgba(80,190,130,0.06); }
-  .proof-col.bad { border-color: rgba(220,110,110,0.45); background: rgba(220,110,110,0.06); }
-  .proof-head {
-    font-size: 11px; text-transform: uppercase; letter-spacing: .07em;
-    font-weight: 600; margin-bottom: 7px;
-  }
-  .proof-col.good .proof-head { color: #6bd49a; }
-  .proof-col.bad .proof-head { color: #e08585; }
-  .proof-body { font-size: 13.5px; line-height: 1.55; white-space: pre-wrap; }
-  .proof-meta {
-    margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--line);
-    font-size: 11px; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  }
-  .proof-note { margin-top: 11px; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+  .proj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 580px) { .proj-grid { grid-template-columns: 1fr; } }
+  .proj-card h4 { font-size: 13.5px; font-weight: 500; margin-bottom: 2px; }
+  .proj-card .tagline { font-size: 11.5px; margin-bottom: 6px; }
+  .proj-card p { font-size: 12.5px; font-weight: 300; color: var(--light-gray-70); }
+  .proj-card a { color: var(--orange-yellow-crayola); font-size: 12px; text-decoration: none; }
 
-  .chips { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 12px; }
+  .fit-bar { height: 7px; border-radius: 4px; background: var(--jet); overflow: hidden; margin: 14px 0 6px; display: flex; }
+  .fit-bar .m { background: var(--text-gradient-yellow); }
+  .fit-bar .g { background: var(--bittersweet-shimmer); }
+  .fit-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
+  @media (max-width: 580px) { .fit-cols { grid-template-columns: 1fr; } }
+  .fit-col h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; font-weight: 500; margin-bottom: 8px; }
+  .fit-col.matched h4 { color: var(--vegas-gold); }
+  .fit-col.gaps h4 { color: hsl(0,45%,68%); }
+  .fit-note { font-size: 12px; font-weight: 300; color: hsl(0,0%,50%); margin-top: 12px; }
+
+  /* Composer - one box, no modes. */
+  .composer-wrap { position: relative; }
+  .composer {
+    display: flex; gap: 10px; align-items: flex-end;
+    background: var(--eerie-black-1); border: 1px solid var(--jet);
+    border-radius: 14px; padding: 10px 10px 10px 16px; transition: var(--transition-1);
+  }
+  .composer:focus-within { border-color: hsla(45,100%,72%,0.5); }
+  textarea {
+    flex: 1; resize: none; background: none; border: 0; outline: none;
+    color: var(--white-2); font-family: inherit; font-size: 14.5px; font-weight: 300;
+    line-height: 1.55; max-height: 220px; padding: 6px 0;
+  }
+  textarea::placeholder { color: hsl(0,0%,40%); }
+  .send {
+    flex-shrink: 0; width: 38px; height: 38px; border: 0; border-radius: 10px;
+    background: var(--orange-yellow-crayola); color: var(--smoky-black);
+    cursor: pointer; font-size: 17px; line-height: 1; transition: var(--transition-1);
+  }
+  .send:hover:not(:disabled) { background: hsl(45,100%,78%); }
+  .send:disabled { opacity: .35; cursor: default; }
+
+  /* Shown when the composer notices a pasted job description. */
+  .jd-flag {
+    display: none; align-items: center; gap: 8px;
+    margin-bottom: 9px; font-size: 12px; font-weight: 300; color: var(--vegas-gold);
+  }
+  .jd-flag.on { display: flex; }
+  .jd-flag .x {
+    background: none; border: 0; color: hsl(0,0%,45%); cursor: pointer;
+    font-family: inherit; font-size: 11.5px; text-decoration: underline;
+  }
+
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
   .chip {
-    background: var(--panel); border: 1px solid var(--line); color: var(--muted);
-    border-radius: 20px; padding: 6px 13px; font-size: 12.5px; cursor: pointer;
+    background: var(--eerie-black-1); border: 1px solid var(--jet); color: var(--light-gray-70);
+    border-radius: 20px; padding: 7px 14px; font-size: 12.5px; font-weight: 300;
+    cursor: pointer; font-family: inherit; transition: var(--transition-1);
   }
-  .chip:hover { color: var(--text); border-color: var(--accent); }
+  .chip:hover { color: var(--orange-yellow-crayola); border-color: hsla(45,100%,72%,0.45); }
 
-  .empty { color: var(--muted); font-size: 13.5px; padding: 10px 0; }
+  .dots span {
+    display: inline-block; width: 5px; height: 5px; margin-right: 3px; border-radius: 50%;
+    background: var(--vegas-gold); animation: blink 1.3s infinite;
+  }
+  .dots span:nth-child(2) { animation-delay: .18s; }
+  .dots span:nth-child(3) { animation-delay: .36s; }
+  @keyframes blink { 0%,60%,100% { opacity: .25; } 30% { opacity: 1; } }
 </style>
 </head>
 <body>
 <div class="shell">
-  <header>
-    <h1>Ask about Naveen</h1>
-    <div class="sub">A small agent grounded in the real work history and projects below — not a generic chatbot. Every answer comes from a tool call, shown under the reply.</div>
-  </header>
+  <article>
+    <h1 class="title-rule">Ask about Naveen</h1>
+    <p class="lede">
+      This is an agent, not a chatbot with my resume pasted into a prompt. It can only answer from
+      tools that read my actual work history — and under every answer you can
+      <b>take those tools away</b> and watch what the same model says without them.
+      Paste a job description and it will size up the fit instead.
+    </p>
 
-  <div class="mode-toggle">
-    <button class="mode-btn on" id="modeAsk" onclick="setMode('ask')">Ask a question</button>
-    <button class="mode-btn" id="modeFit" onclick="setMode('fit')">Paste a job description</button>
-    <button class="mode-btn" id="modeProof" onclick="setMode('proof')">Why trust it?</button>
-  </div>
+    <div class="thread" id="thread"></div>
 
-  <div class="thread" id="thread"></div>
+    <div class="composer-wrap">
+      <div class="jd-flag" id="jdFlag">
+        <span>Looks like a job description — I'll assess fit against it.</span>
+        <button class="x" onclick="forceQuestion()">no, just answer it</button>
+      </div>
+      <div class="composer">
+        <textarea id="draft" rows="1" placeholder="Ask me anything, or paste a job description…"></textarea>
+        <button class="send" id="sendBtn" onclick="send()" title="Send">&uarr;</button>
+      </div>
+    </div>
 
-  <div id="askComposer" class="composer">
-    <textarea id="draft" placeholder="Ask about a project, a job, or a skill area…" onkeydown="if(event.ctrlKey && event.key==='Enter') send()"></textarea>
-    <button class="send" id="sendBtn" onclick="send()">Send</button>
-  </div>
-
-  <div id="fitComposer" class="composer" style="display:none">
-    <textarea id="jdDraft" placeholder="Paste the job description here…" style="min-height:110px"></textarea>
-    <button class="send" id="fitBtn" onclick="sendFit()">Check fit</button>
-  </div>
-
-  <div id="proofComposer" class="composer" style="display:none">
-    <textarea id="proofDraft" placeholder="Ask anything factual — dates, projects, what I built where…"></textarea>
-    <button class="send" id="proofBtn" onclick="sendProof()">Run both</button>
-  </div>
-
-  <div class="chips" id="chips"></div>
+    <div class="chips" id="chips"></div>
+  </article>
 </div>
 
 <script>
-  // Point this at wherever the backend is actually running.
-  const API_BASE = window.PORTFOLIO_ASSIST_API || 'http://localhost:8081/api';
+  const API_BASE = window.PORTFOLIO_ASSIST_API || 'https://portfolio-assist.onrender.com/api';
 
   const SUGGESTIONS = [
-    'What have you built with AI/MCP?',
+    'What have you built with AI and MCP?',
     'Walk me through your background',
-    'What did you do at Fidelity?',
-    'What testing tools do you use?',
+    'What did you do at Capital One?',
     'Tell me about Bank Assist'
   ];
 
-  let mode = 'ask';
+  // A paste this long is a job description, not a question. The user can override.
+  const JD_CHARS = 320;
+
   const thread = document.getElementById('thread');
+  const draft = document.getElementById('draft');
+  const jdFlag = document.getElementById('jdFlag');
+  const sendBtn = document.getElementById('sendBtn');
+  let forcedQuestion = false;
 
-  function setMode(m) {
-    mode = m;
-    document.getElementById('modeAsk').classList.toggle('on', m === 'ask');
-    document.getElementById('modeFit').classList.toggle('on', m === 'fit');
-    document.getElementById('modeProof').classList.toggle('on', m === 'proof');
-    document.getElementById('askComposer').style.display = m === 'ask' ? 'flex' : 'none';
-    document.getElementById('fitComposer').style.display = m === 'fit' ? 'flex' : 'none';
-    document.getElementById('proofComposer').style.display = m === 'proof' ? 'flex' : 'none';
-    document.getElementById('chips').style.display = m === 'ask' ? 'flex' : 'none';
-    if (m === 'proof') showProofIntro();
+  function looksLikeJd() {
+    return !forcedQuestion && draft.value.trim().length >= JD_CHARS;
   }
+  function syncFlag() {
+    jdFlag.classList.toggle('on', looksLikeJd());
+    draft.style.height = 'auto';
+    draft.style.height = Math.min(draft.scrollHeight, 220) + 'px';
+  }
+  function forceQuestion() { forcedQuestion = true; syncFlag(); }
 
-  let proofIntroShown = false;
-  function showProofIntro() {
-    if (proofIntroShown) return;
-    proofIntroShown = true;
-    const row = document.createElement('div');
-    row.className = 'turn assistant';
-    row.innerHTML = '<div class="bubble">Fair question — a chatbot claiming to be someone\'s resume is easy to fake. '
-      + 'So ask me something factual and I\'ll answer it twice: once with my tools connected, once with them cut off. '
-      + 'Same model, same persona prompt, same question. The only difference is whether it can look anything up.</div>';
-    thread.appendChild(row);
-    thread.scrollTop = thread.scrollHeight;
-  }
+  draft.addEventListener('input', syncFlag);
+  draft.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  });
 
   function renderChips() {
     const el = document.getElementById('chips');
-    el.innerHTML = '';
     SUGGESTIONS.forEach(s => {
-      const c = document.createElement('span');
+      const c = document.createElement('button');
       c.className = 'chip';
       c.textContent = s;
-      c.onclick = () => { document.getElementById('draft').value = s; send(); };
+      c.onclick = () => { draft.value = s; forcedQuestion = false; syncFlag(); send(); };
       el.appendChild(c);
     });
   }
   renderChips();
 
+  function esc(s) { const d = document.createElement('div'); d.textContent = s ?? ''; return d.innerHTML; }
+
   function addUserTurn(text) {
     const row = document.createElement('div');
     row.className = 'turn user';
-    row.innerHTML = `<div class="bubble"></div>`;
-    row.querySelector('.bubble').textContent = text;
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    b.textContent = text;
+    row.appendChild(b);
     thread.appendChild(row);
-    thread.scrollTop = thread.scrollHeight;
   }
 
-  function addAssistantTurn(text, failed) {
+  function addAssistantTurn() {
     const row = document.createElement('div');
-    row.className = 'turn assistant' + (failed ? ' failed' : '');
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble';
-    bubble.textContent = text;
-    row.appendChild(bubble);
+    row.className = 'turn assistant';
+    row.innerHTML = '<div class="gcard"><div class="answer"><span class="dots">'
+      + '<span></span><span></span><span></span></span></div></div>';
     thread.appendChild(row);
-    thread.scrollTop = thread.scrollHeight;
-    return bubble;
-  }
-
-  function esc(s) { const d = document.createElement('div'); d.textContent = s ?? ''; return d.innerHTML; }
-
-  function renderCard(bubble, resultType, card) {
-    if (!card) return;
-    const wrap = document.createElement('div');
-    wrap.className = 'card';
-
-    if (resultType === 'experience' && card.items) {
-      wrap.innerHTML = `<div class="timeline">${card.items.map(i => `
-        <div class="t-item">
-          <div class="co">${esc(i.company)}</div>
-          <div class="role">${esc(i.title)} · ${esc(i.dateRange)}</div>
-          <div class="one">${esc(i.oneLiner)}</div>
-        </div>`).join('')}</div>`;
-    } else if (resultType === 'experienceDetail') {
-      wrap.innerHTML = `<h3>${esc(card.company)}</h3><div class="tagline">${esc(card.title)} · ${esc(card.dateRange)}</div>
-        <div class="tags">${(card.stack||[]).map(s => `<span class="tag">${esc(s)}</span>`).join('')}</div>`;
-    } else if (resultType === 'projects' && card.items) {
-      wrap.innerHTML = `<div class="proj-grid">${card.items.map(p => `
-        <div class="proj-card">
-          <h4>${esc(p.name)}</h4>
-          <div class="tagline">${esc(p.tagline)}</div>
-          <p>${esc(p.summary)}</p>
-          <a href="${esc(p.url)}" target="_blank" rel="noopener">View →</a>
-        </div>`).join('')}</div>`;
-    } else if (resultType === 'projectDetail') {
-      wrap.innerHTML = `<h3>${esc(card.name)}</h3><div class="tagline">${esc(card.tagline)}</div>
-        <div class="tags">${(card.stack||[]).map(s => `<span class="tag">${esc(s)}</span>`).join('')}</div>
-        <a class="link-btn" href="${esc(card.url)}" target="_blank" rel="noopener">View project →</a>`;
-    } else if (resultType === 'skills' && card.groups) {
-      wrap.innerHTML = `<div class="skill-groups">${card.groups.map(g => `
-        <div class="skill-group">
-          <div class="area">${esc(g.area)}</div>
-          <div class="tags">${g.items.map(i => `<span class="tag">${esc(i)}</span>`).join('')}</div>
-        </div>`).join('')}</div>`;
-    } else if (resultType === 'fit') {
-      const total = (card.matchedCount || 0) + (card.gapCount || 0) || 1;
-      const mPct = Math.round(100 * (card.matchedCount || 0) / total);
-      wrap.innerHTML = `
-        <div class="fit-bar"><div class="m" style="width:${mPct}%"></div><div class="g" style="width:${100-mPct}%"></div></div>
-        <div class="fit-cols">
-          <div class="fit-col matched">
-            <h4>Real experience (${card.matchedCount||0})</h4>
-            <div class="tags">${(card.matchedSkills||[]).map(s => `<span class="tag">${esc(s)}</span>`).join('') || '<span class="empty">none matched</span>'}</div>
-          </div>
-          <div class="fit-col gaps">
-            <h4>Gaps (${card.gapCount||0})</h4>
-            <div class="tags">${(card.gaps||[]).map(s => `<span class="tag gap">${esc(s)}</span>`).join('') || '<span class="empty">none</span>'}</div>
-          </div>
-        </div>
-        <div class="fit-note">Best proof points: ${esc((card.highlightedExperience||[]).concat(card.highlightedProjects||[]).join(', ') || 'n/a')}</div>`;
-    } else {
-      return;
-    }
-    bubble.appendChild(wrap);
-  }
-
-  function renderTrace(bubble, toolCalls) {
-    if (!toolCalls || !toolCalls.length) return;
-    const wrap = document.createElement('div');
-    wrap.className = 'trace';
-    wrap.innerHTML = `<div class="trace-head">${toolCalls.length} tool call${toolCalls.length===1?'':'s'}</div>` +
-      toolCalls.map(c => `<div class="call"><span class="badge ${c.outcome}">${esc(c.outcome)}</span><span>${esc(c.tool)}</span><span>${c.latencyMs}ms</span></div>`).join('');
-    bubble.appendChild(wrap);
+    row.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    return row.querySelector('.gcard');
   }
 
   async function callApi(path, body) {
@@ -315,86 +315,157 @@
   }
 
   async function send() {
-    const el = document.getElementById('draft');
-    const message = el.value.trim();
-    if (!message) return;
-    el.value = '';
-    addUserTurn(message);
-    document.getElementById('sendBtn').disabled = true;
+    const text = draft.value.trim();
+    if (!text) return;
+    const asJd = looksLikeJd();
+
+    addUserTurn(asJd ? 'Pasted a job description — ' + text.length + ' characters' : text);
+    draft.value = '';
+    forcedQuestion = false;
+    syncFlag();
+    sendBtn.disabled = true;
+
+    const card = addAssistantTurn();
+    const answerEl = card.querySelector('.answer');
+    // Free tiers sleep when idle; say so rather than leaving a blank box.
+    const slow = setTimeout(() => {
+      answerEl.innerHTML = '<span class="dots"><span></span><span></span><span></span></span>'
+        + ' <span class="ms">waking the free-tier server, this can take a minute</span>';
+    }, 4500);
+
     try {
-      const res = await callApi('/ask', { message });
-      const bubble = addAssistantTurn(res.answer);
-      renderCard(bubble, res.resultType, res.card);
-      renderTrace(bubble, res.toolCalls);
+      const res = asJd
+        ? await callApi('/assess-fit', { jobDescription: text })
+        : await callApi('/ask', { message: text });
+      clearTimeout(slow);
+      answerEl.textContent = res.answer;
+      renderCard(card, res.resultType, res.card);
+      renderMeta(card, res.toolCalls, asJd ? null : text);
     } catch (e) {
-      addAssistantTurn('Could not reach the assistant. Is the backend running? (' + e.message + ')', true);
+      clearTimeout(slow);
+      answerEl.classList.add('failed');
+      answerEl.textContent = 'Could not reach the agent (' + e.message + ').';
     } finally {
-      document.getElementById('sendBtn').disabled = false;
+      sendBtn.disabled = false;
     }
   }
 
-  async function sendFit() {
-    const el = document.getElementById('jdDraft');
-    const jobDescription = el.value.trim();
-    if (!jobDescription) return;
-    addUserTurn('[Pasted a job description — ' + jobDescription.length + ' characters]');
-    document.getElementById('fitBtn').disabled = true;
-    try {
-      const res = await callApi('/assess-fit', { jobDescription });
-      const bubble = addAssistantTurn(res.answer);
-      renderCard(bubble, res.resultType, res.card);
-      renderTrace(bubble, res.toolCalls);
-    } catch (e) {
-      addAssistantTurn('Could not reach the assistant. Is the backend running? (' + e.message + ')', true);
-    } finally {
-      document.getElementById('fitBtn').disabled = false;
-    }
-  }
-
-  async function sendProof() {
-    const el = document.getElementById('proofDraft');
-    const message = el.value.trim();
-    if (!message) return;
-    el.value = '';
-    addUserTurn(message);
-    document.getElementById('proofBtn').disabled = true;
-    try {
-      const res = await callApi('/grounding-demo', { message });
-      renderProof(res);
-    } catch (e) {
-      addAssistantTurn('Could not reach the assistant. Is the backend running? (' + e.message + ')', true);
-    } finally {
-      document.getElementById('proofBtn').disabled = false;
-    }
-  }
-
-  function renderProof(res) {
+  function renderMeta(card, toolCalls, questionForCurtain) {
     const row = document.createElement('div');
-    row.className = 'turn assistant';
-    const tools = (res.groundedToolCalls || []).map(t => t.tool).join(', ') || 'none';
-    row.innerHTML = `
-      <div class="bubble">
-        <div class="proof-grid">
-          <div class="proof-col good">
-            <div class="proof-head">Tools connected</div>
-            <div class="proof-body">${esc(res.groundedAnswer)}</div>
-            <div class="proof-meta">Looked up: ${esc(tools)} · ${res.groundedLatencyMs}ms</div>
-          </div>
-          <div class="proof-col bad">
-            <div class="proof-head">Tools cut off</div>
-            <div class="proof-body">${esc(res.ungroundedAnswer)}</div>
-            <div class="proof-meta">Nothing looked up · ${res.ungroundedLatencyMs}ms</div>
-          </div>
-        </div>
-        <div class="proof-note">Both answers sound equally confident. Only the left one is checkable — every fact in it came back from a tool call against real content. The right one is the same model with nothing to consult, which is what most "chat with my resume" demos actually are.</div>
-      </div>`;
-    thread.appendChild(row);
-    thread.scrollTop = thread.scrollHeight;
+    row.className = 'meta-row';
+    (toolCalls || []).forEach(t => {
+      const chip = document.createElement('span');
+      chip.className = 'toolchip';
+      chip.innerHTML = '<span class="dot"></span>' + esc(t.tool);
+      row.appendChild(chip);
+    });
+    if (!(toolCalls || []).length) {
+      const chip = document.createElement('span');
+      chip.className = 'ms';
+      chip.textContent = 'no tool call';
+      row.appendChild(chip);
+    }
+    if (questionForCurtain) {
+      const btn = document.createElement('button');
+      btn.className = 'curtain-btn';
+      btn.textContent = 'now take the tools away →';
+      btn.onclick = () => revealCurtain(btn, card, questionForCurtain);
+      row.appendChild(btn);
+    }
+    card.appendChild(row);
   }
 
-  // Free hosting tiers sleep after ~15 minutes idle and take up to a minute to wake.
-  // Nudging the health endpoint as soon as the page opens means the backend is usually
-  // already awake by the time a visitor finishes typing their first question.
+  async function revealCurtain(btn, card, question) {
+    btn.disabled = true;
+    btn.textContent = 'asking again without tools…';
+    try {
+      const res = await callApi('/ungrounded', { message: question });
+      const box = document.createElement('div');
+      box.className = 'curtain';
+      box.innerHTML =
+        '<div class="curtain-head">Same question, same model, no tools</div>'
+        + '<div class="curtain-body">' + esc(res.answer) + '</div>'
+        + '<div class="curtain-foot">Just as fluent, just as confident, and nothing behind it — '
+        + 'it has no way to look anything up, so the specifics are invented. '
+        + 'That gap is the whole reason this is built as tools plus guardrails.</div>';
+      card.appendChild(box);
+      btn.remove();
+      box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = 'could not load — try again';
+    }
+  }
+
+  function renderCard(card, resultType, data) {
+    if (!data) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'card';
+
+    if (resultType === 'experience' && data.items) {
+      wrap.innerHTML = '<div class="timeline-mini">' + data.items.map(i =>
+        '<div class="tl-item"><div class="co">' + esc(i.company) + '</div>'
+        + '<div class="role">' + esc(i.title) + ' · ' + esc(i.dateRange) + '</div>'
+        + (i.oneLiner ? '<div class="one">' + esc(i.oneLiner) + '</div>' : '')
+        + '</div>').join('') + '</div>';
+
+    } else if (resultType === 'experienceDetail' && data.company) {
+      wrap.classList.add('gcard');
+      wrap.innerHTML = '<h3>' + esc(data.company) + '</h3>'
+        + '<div class="tagline">' + esc(data.title) + ' · ' + esc(data.dateRange) + '</div>'
+        + (data.stack ? '<div class="tags">' + data.stack.map(s => '<span class="tag">' + esc(s) + '</span>').join('') + '</div>' : '');
+
+    } else if (resultType === 'projects' && data.items) {
+      wrap.innerHTML = '<div class="proj-grid">' + data.items.map(p =>
+        '<div class="gcard proj-card"><h4>' + esc(p.name) + '</h4>'
+        + (p.tagline ? '<div class="tagline">' + esc(p.tagline) + '</div>' : '')
+        + '<p>' + esc(p.summary) + '</p>'
+        + (p.url ? '<a href="' + esc(p.url) + '" target="_blank" rel="noopener">View →</a>' : '')
+        + '</div>').join('') + '</div>';
+
+    } else if (resultType === 'skills' && data.groups) {
+      wrap.innerHTML = data.groups.map(g =>
+        '<div style="margin-bottom:12px"><div class="role" style="margin-bottom:5px">' + esc(g.area) + '</div>'
+        + '<div class="tags">' + g.items.map(s => '<span class="tag">' + esc(s) + '</span>').join('') + '</div></div>'
+      ).join('');
+
+    } else if (resultType === 'fit') {
+      const matched = data.matchedSkills || [];
+      const gaps = data.gaps || [];
+      const total = matched.length + gaps.length;
+      const pct = total ? Math.round((matched.length / total) * 100) : 0;
+      const proof = (data.highlightedExperience || []).concat(data.highlightedProjects || []);
+      wrap.innerHTML =
+        '<div class="fit-bar"><div class="m" style="width:' + pct + '%"></div>'
+        + '<div class="g" style="width:' + (100 - pct) + '%"></div></div>'
+        + '<div class="ms">' + matched.length + ' of ' + total + ' requirements matched</div>'
+        + '<div class="fit-cols">'
+        + '<div class="fit-col matched"><h4>Matched</h4><div class="tags">'
+        + matched.map(s => '<span class="tag">' + esc(s) + '</span>').join('') + '</div></div>'
+        + '<div class="fit-col gaps"><h4>Gaps</h4><div class="tags">'
+        + (gaps.length
+            ? gaps.map(s => '<span class="tag gap">' + esc(s) + '</span>').join('')
+            : '<span class="ms">none found</span>')
+        + '</div></div></div>'
+        + (proof.length
+            ? '<div class="fit-note">Evidence drawn from: ' + esc(proof.join(', ')) + '</div>'
+            : '')
+        + '<div class="fit-note">Matched in Java against a fixed skill dictionary, not judged by the model — '
+        + 'so it cannot claim something I have not done, or quietly drop a gap.</div>';
+
+    } else if (resultType === 'projectDetail' && data.name) {
+      wrap.classList.add('gcard');
+      wrap.innerHTML = '<h3>' + esc(data.name) + '</h3>'
+        + (data.tagline ? '<div class="tagline">' + esc(data.tagline) + '</div>' : '')
+        + (data.stack ? '<div class="tags">' + data.stack.map(s => '<span class="tag">' + esc(s) + '</span>').join('') + '</div>' : '')
+        + (data.url ? '<a class="link-btn" href="' + esc(data.url) + '" target="_blank" rel="noopener">View the code →</a>' : '');
+    } else {
+      return;
+    }
+    card.appendChild(wrap);
+  }
+
+  // Wake the backend while the visitor is still reading the page.
   fetch(API_BASE.replace(/\/api$/, '') + '/actuator/health').catch(() => {});
 </script>
 </body>
