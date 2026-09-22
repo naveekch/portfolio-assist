@@ -1,0 +1,24 @@
+name: Keep backend warm
+
+# Render's free tier spins the service down after 15 minutes with no
+# requests, and the next request pays a 50-60s cold start while it boots
+# back up. Pinging the health endpoint well inside that window keeps it
+# from ever spinning down, so a visitor never eats the wait.
+#
+# 10 minutes leaves margin even if GitHub delays a scheduled run (which it
+# can, briefly, under load) - it would need to slip past 5 extra minutes
+# before a gap opened up.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: |
+          curl -sf --max-time 90 https://portfolio-assist.onrender.com/actuator/health
+          echo
+          echo "pinged at $(date -u)"
